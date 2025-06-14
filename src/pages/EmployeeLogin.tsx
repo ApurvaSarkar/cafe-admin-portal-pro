@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
+import { authService } from "@/services/authService";
 
 const EmployeeLogin = () => {
   const navigate = useNavigate();
@@ -18,22 +19,25 @@ const EmployeeLogin = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simple demo authentication - in real app, this would connect to backend
-    if (employeeId === "EMP001" && password === "emp123") {
+    try {
+      const response = await authService.login({ employeeId, password });
+      
       toast({
         title: "Login Successful",
-        description: "Welcome back to your dashboard!",
+        description: `Welcome back, ${response.user.name}!`,
       });
+      
       navigate("/employee/dashboard");
-    } else {
+    } catch (error) {
+      console.error('Login error:', error);
       toast({
         title: "Login Failed",
-        description: "Invalid employee ID or password. Try EMP001 / emp123",
+        description: "Invalid employee ID or password. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
-    
-    setIsLoading(false);
   };
 
   return (
@@ -109,14 +113,6 @@ const EmployeeLogin = () => {
                 {isLoading ? "Signing In..." : "Sign In"}
               </Button>
             </form>
-
-            <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-              <p className="text-sm text-blue-700 text-center">
-                <strong>Demo Credentials:</strong><br />
-                Employee ID: EMP001<br />
-                Password: emp123
-              </p>
-            </div>
           </CardContent>
         </Card>
       </div>

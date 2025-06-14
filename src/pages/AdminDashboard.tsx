@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Coffee, Users, Plus, LogOut, Menu, X, UserPlus, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
+import { authService } from "@/services/authService";
+import { employeeService, Employee, CreateEmployeeRequest } from "@/services/employeeService";
 
 interface Employee {
   id: string;
@@ -21,68 +22,79 @@ interface Employee {
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [employees, setEmployees] = useState<Employee[]>([
-    {
-      id: "EMP001",
-      name: "John Doe",
-      email: "john@cafeflow.com",
-      role: "Barista",
-      joinDate: "2024-01-15",
-      status: 'active'
-    },
-    {
-      id: "EMP002",
-      name: "Jane Smith",
-      email: "jane@cafeflow.com",
-      role: "Cashier",
-      joinDate: "2024-02-01",
-      status: 'active'
-    }
-  ]);
-
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [newEmployee, setNewEmployee] = useState({
     name: "",
     email: "",
     role: "",
     password: ""
   });
-
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const handleLogout = () => {
-    toast({
-      title: "Logged Out",
-      description: "You have been successfully logged out.",
-    });
-    navigate("/");
+  useEffect(() => {
+    loadEmployees();
+  }, []);
+
+  const loadEmployees = async () => {
+    try {
+      setIsLoading(true);
+      const data = await employeeService.getAllEmployees();
+      setEmployees(data);
+    } catch (error) {
+      console.error('Error loading employees:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load employees. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const generateEmployeeId = () => {
-    const nextNum = employees.length + 1;
-    return `EMP${nextNum.toString().padStart(3, '0')}`;
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+      toast({
+        title: "Logged Out",
+        description: "You have been successfully logged out.",
+      });
+      navigate("/");
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
-  const handleAddEmployee = (e: React.FormEvent) => {
+  const handleAddEmployee = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const employee: Employee = {
-      id: generateEmployeeId(),
-      name: newEmployee.name,
-      email: newEmployee.email,
-      role: newEmployee.role,
-      joinDate: new Date().toISOString().split('T')[0],
-      status: 'active'
-    };
+    try {
+      const createRequest: CreateEmployeeRequest = {
+        name: newEmployee.name,
+        email: newEmployee.email,
+        role: newEmployee.role,
+        password: newEmployee.password
+      };
 
-    setEmployees([...employees, employee]);
-    
-    toast({
-      title: "Employee Added Successfully",
-      description: `${employee.name} has been added with ID: ${employee.id}`,
-    });
+      const employee = await employeeService.createEmployee(createRequest);
+      setEmployees([...employees, employee]);
+      
+      toast({
+        title: "Employee Added Successfully",
+        description: `${employee.name} has been added with ID: ${employee.employeeId}`,
+      });
 
-    setNewEmployee({ name: "", email: "", role: "", password: "" });
-    setIsDialogOpen(false);
+      setNewEmployee({ name: "", email: "", role: "", password: "" });
+      setIsDialogOpen(false);
+    } catch (error) {
+      console.error('Error creating employee:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create employee. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const Sidebar = () => (
@@ -176,7 +188,7 @@ const AdminDashboard = () => {
                   <div>
                     <p className="text-sm font-medium text-gray-600">Active Employees</p>
                     <p className="text-3xl font-bold text-green-600">
-                      {employees.filter(emp => emp.status === 'active').length}
+                      {employees.filter(emp => emp.status === 'ACTIVE').length}
                     </p>
                   </div>
                   <Eye className="h-8 w-8 text-green-600" />
@@ -189,7 +201,11 @@ const AdminDashboard = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-gray-600">New This Month</p>
-                    <p className="text-3xl font-bold text-blue-600">2</p>
+                    <p className="text-3xl font-bold text-blue-600">
+                      {employees.filter(emp => 
+                        new Date(emp.joinDate).getMonth() === new Date().getMonth()
+                      ).length}
+                    </p>
                   </div>
                   <UserPlus className="h-8 w-8 text-blue-600" />
                 </div>
