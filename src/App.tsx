@@ -28,7 +28,10 @@ const App = () => (
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/employee/login" element={<EmployeeLogin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/orders" element={<AdminOrders />} />
           <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
+          <Route path="/employee/inventory" element={<EmployeeInventory />} />
+          <Route path="/employee/orders" element={<EmployeeOrders />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
