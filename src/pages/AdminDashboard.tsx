@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Coffee, Users, Plus, LogOut, Menu, X, UserPlus, Eye } from "lucide-react";
+import { Coffee, Users, Plus, LogOut, Menu, X, UserPlus, Eye, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -107,6 +107,14 @@ const AdminDashboard = () => {
           <Button variant="ghost" className="w-full justify-start text-amber-700 bg-amber-50">
             <Users className="h-4 w-4 mr-3" />
             Employee Management
+          </Button>
+          <Button 
+            variant="ghost" 
+            className="w-full justify-start"
+            onClick={() => navigate("/admin/orders")}
+          >
+            <ShoppingCart className="h-4 w-4 mr-3" />
+            Orders
           </Button>
         </div>
       </nav>

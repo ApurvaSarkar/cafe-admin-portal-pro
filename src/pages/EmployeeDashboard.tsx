@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Coffee, Clock, TrendingUp, LogOut, Menu, X, CheckCircle, AlertCircle } from "lucide-react";
+import { Coffee, Clock, TrendingUp, LogOut, Menu, X, CheckCircle, AlertCircle, Package, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
@@ -53,6 +53,22 @@ const EmployeeDashboard = () => {
           <Button variant="ghost" className="w-full justify-start text-blue-700 bg-blue-50">
             <TrendingUp className="h-4 w-4 mr-3" />
             Dashboard
+          </Button>
+          <Button 
+            variant="ghost" 
+            className="w-full justify-start"
+            onClick={() => navigate("/employee/inventory")}
+          >
+            <Package className="h-4 w-4 mr-3" />
+            Inventory
+          </Button>
+          <Button 
+            variant="ghost" 
+            className="w-full justify-start"
+            onClick={() => navigate("/employee/orders")}
+          >
+            <ShoppingCart className="h-4 w-4 mr-3" />
+            Orders
           </Button>
         </div>
       </nav>
