@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
+import { authService } from "@/services/authService";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -18,22 +19,25 @@ const AdminLogin = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simple demo authentication - in real app, this would connect to backend
-    if (email === "admin@cafeflow.com" && password === "admin123") {
+    try {
+      const response = await authService.login({ email, password });
+      
       toast({
         title: "Login Successful",
-        description: "Welcome back, Administrator!",
+        description: `Welcome back, ${response.user.name}!`,
       });
+      
       navigate("/admin/dashboard");
-    } else {
+    } catch (error) {
+      console.error('Login error:', error);
       toast({
         title: "Login Failed",
-        description: "Invalid email or password. Try admin@cafeflow.com / admin123",
+        description: "Invalid email or password. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
-    
-    setIsLoading(false);
   };
 
   return (
@@ -109,14 +113,6 @@ const AdminLogin = () => {
                 {isLoading ? "Signing In..." : "Sign In"}
               </Button>
             </form>
-
-            <div className="mt-6 p-4 bg-amber-50 rounded-lg border border-amber-200">
-              <p className="text-sm text-amber-700 text-center">
-                <strong>Demo Credentials:</strong><br />
-                Email: admin@cafeflow.com<br />
-                Password: admin123
-              </p>
-            </div>
           </CardContent>
         </Card>
       </div>

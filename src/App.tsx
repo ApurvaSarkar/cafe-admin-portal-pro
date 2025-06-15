@@ -13,6 +13,7 @@ import EmployeeDashboard from "./pages/EmployeeDashboard";
 import EmployeeInventory from "./pages/EmployeeInventory";
 import EmployeeOrders from "./pages/EmployeeOrders";
 import NotFound from "./pages/NotFound";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -27,10 +28,7 @@ const App = () => (
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/employee/login" element={<EmployeeLogin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/orders" element={<AdminOrders />} />
           <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
-          <Route path="/employee/inventory" element={<EmployeeInventory />} />
-          <Route path="/employee/orders" element={<EmployeeOrders />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
