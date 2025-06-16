@@ -1,13 +1,14 @@
 
 import { useState } from "react";
-import { Coffee, Lock, Mail, ArrowLeft } from "lucide-react";
+import { Coffee, Lock, Mail, ArrowLeft, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { authService } from "@/services/authService";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -68,6 +69,15 @@ const AdminLogin = () => {
           </CardHeader>
 
           <CardContent>
+            <Alert className="mb-4 bg-amber-50 border-amber-200">
+              <Info className="h-4 w-4 text-amber-600" />
+              <AlertDescription className="text-amber-700">
+                <strong>Demo Credentials:</strong><br />
+                Email: admin@cafeflow.com<br />
+                Password: admin123
+              </AlertDescription>
+            </Alert>
+            
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-amber-900 font-medium">

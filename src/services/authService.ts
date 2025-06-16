@@ -1,5 +1,5 @@
 
-import { apiClient } from '@/lib/api';
+// Mock authentication service with hardcoded credentials
 
 export interface LoginRequest {
   email?: string;
@@ -26,29 +26,88 @@ export interface User {
   role: 'ADMIN' | 'EMPLOYEE';
 }
 
+// Hardcoded admin credentials
+const ADMIN_CREDENTIALS = {
+  email: 'admin@cafeflow.com',
+  password: 'admin123',
+  userData: {
+    id: 'ADM001',
+    name: 'Admin User',
+    email: 'admin@cafeflow.com',
+    role: 'ADMIN' as const
+  }
+};
+
+// Hardcoded employee credentials
+const EMPLOYEE_CREDENTIALS = [
+  {
+    employeeId: 'EMP001',
+    password: 'emp001',
+    userData: {
+      id: 'EMP001',
+      name: 'John Doe',
+      employeeId: 'EMP001',
+      role: 'EMPLOYEE' as const
+    }
+  },
+  {
+    employeeId: 'EMP002',
+    password: 'emp002',
+    userData: {
+      id: 'EMP002',
+      name: 'Jane Smith',
+      employeeId: 'EMP002',
+      role: 'EMPLOYEE' as const
+    }
+  }
+];
+
 class AuthService {
   async login(credentials: LoginRequest): Promise<LoginResponse> {
-    const endpoint = credentials.email ? '/auth/admin/login' : '/auth/employee/login';
-    const response = await apiClient.post<LoginResponse>(endpoint, credentials);
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    let user = null;
+    
+    // Check if admin login
+    if (credentials.email) {
+      if (credentials.email === ADMIN_CREDENTIALS.email && 
+          credentials.password === ADMIN_CREDENTIALS.password) {
+        user = ADMIN_CREDENTIALS.userData;
+      }
+    } 
+    // Check if employee login
+    else if (credentials.employeeId) {
+      const employee = EMPLOYEE_CREDENTIALS.find(
+        emp => emp.employeeId === credentials.employeeId && emp.password === credentials.password
+      );
+      if (employee) {
+        user = employee.userData;
+      }
+    }
+    
+    if (!user) {
+      throw new Error('Invalid credentials');
+    }
+    
+    // Generate mock token
+    const token = `mock-token-${Date.now()}`;
     
     // Store token and user info
-    localStorage.setItem('authToken', response.token);
-    localStorage.setItem('userRole', response.user.role);
-    localStorage.setItem('userData', JSON.stringify(response.user));
+    localStorage.setItem('authToken', token);
+    localStorage.setItem('userRole', user.role);
+    localStorage.setItem('userData', JSON.stringify(user));
     
-    return response;
+    return {
+      token,
+      user
+    };
   }
 
-  async logout(): Promise<void> {
-    try {
-      await apiClient.post('/auth/logout', {});
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('userRole');
-      localStorage.removeItem('userData');
-    }
+  logout(): void {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('userData');
   }
 
   getCurrentUser(): User | null {

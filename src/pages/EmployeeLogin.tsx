@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Coffee, Lock, User, ArrowLeft } from "lucide-react";
+import { Coffee, Lock, User, ArrowLeft, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { authService } from "@/services/authService";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const EmployeeLogin = () => {
   const navigate = useNavigate();
@@ -68,6 +69,15 @@ const EmployeeLogin = () => {
           </CardHeader>
 
           <CardContent>
+            <Alert className="mb-4 bg-blue-50 border-blue-200">
+              <Info className="h-4 w-4 text-blue-600" />
+              <AlertDescription className="text-blue-700">
+                <strong>Demo Credentials:</strong><br />
+                Employee ID: EMP001<br />
+                Password: emp001
+              </AlertDescription>
+            </Alert>
+            
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="employeeId" className="text-blue-900 font-medium">
